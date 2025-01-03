@@ -25,6 +25,13 @@ fun Application.configureRouting() {
             call.respondText("Hello World!")
         }
 
+        get("/test1") {
+            call.respondText(
+                contentType = ContentType.parse("text/html"),
+                text = "Hello from Ktor!"
+            )
+        }
+
         get("/error-state") {
             throw IllegalStateException("Too Busy")
         }
