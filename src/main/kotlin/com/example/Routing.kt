@@ -20,6 +20,7 @@ fun Application.configureRouting() {
 
     routing {
         staticResources("/content", "mycontent", "example.html")
+        staticResources("/task-ui", "task-ui")
 
         get("/") {
             call.respondText("Hello World!")
