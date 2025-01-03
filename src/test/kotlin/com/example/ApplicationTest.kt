@@ -1,9 +1,15 @@
 package com.example
 
 import io.ktor.client.request.get
+import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
+import io.ktor.http.formUrlEncode
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
 import kotlin.test.assertContains
@@ -58,5 +64,44 @@ class ApplicationTest {
         val response = client.get("/tasks/byPriority/Vital")
 
         assertEquals(HttpStatusCode.NotFound, response.status)
+    }
+
+    @Test
+    fun `should add new task`() = testScope {
+        val response = client.post("/task") {
+            header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
+            setBody(
+                listOf(
+                    "name" to "swimming",
+                    "description" to "Go to the beach",
+                    "priority" to "Low"
+                ).formUrlEncode()
+            )
+        }
+
+        assertEquals(HttpStatusCode.NoContent, response.status)
+
+        val response2 = client.get("/tasks")
+
+        assertEquals(HttpStatusCode.OK, response2.status)
+
+        val body = response2.bodyAsText()
+        assertContains(body, "swimming")
+        assertContains(body, "Go to the beach")
+    }
+
+    @Test
+    fun `should return 400 when not all parameters supplied`() = testScope {
+        val request = client.post("/task") {
+            header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
+            setBody(
+                listOf(
+                    "name" to "swimming",
+                    "description" to "Go to the beach"
+                ).formUrlEncode()
+            )
+        }
+
+        assertEquals(HttpStatusCode.BadRequest, request.status)
     }
 }
