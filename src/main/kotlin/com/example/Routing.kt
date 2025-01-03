@@ -98,11 +98,10 @@ fun Application.configureRouting() {
                     call.respond(HttpStatusCode.NoContent)
                 } catch (e: IllegalArgumentException) {
                     call.respond(HttpStatusCode.BadRequest)
-                } catch (ex: IllegalStateException) {
+                }
+                catch (ex: IllegalStateException) {
                     call.respond(HttpStatusCode.BadRequest)
                 }
-
-
             }
         }
 
