@@ -24,7 +24,7 @@ fun testScope (block: suspend ApplicationTestBuilder.() -> Unit): Unit = testApp
     block()
 }
 
-class ApplicationTest {
+class ApplicationKtTest {
     @Test
     fun testRoot() = testScope {
         val response = client.get("/")
@@ -68,7 +68,7 @@ class ApplicationTest {
 
     @Test
     fun `should add new task`() = testScope {
-        val response = client.post("/task") {
+        val response = client.post("/tasks") {
             header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
             setBody(
                 listOf(
@@ -92,7 +92,7 @@ class ApplicationTest {
 
     @Test
     fun `should return 400 when not all parameters supplied`() = testScope {
-        val request = client.post("/task") {
+        val request = client.post("/tasks") {
             header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
             setBody(
                 listOf(
@@ -103,5 +103,21 @@ class ApplicationTest {
         }
 
         assertEquals(HttpStatusCode.BadRequest, request.status)
+    }
+
+    @Test
+    fun `should find task by name`() = testScope {
+        val response = client.get("/tasks/byName/cleaning")
+
+        assertEquals(HttpStatusCode.OK, response.status)
+        val body = response.bodyAsText();
+        assertContains(body, "Clean the house")
+    }
+
+    @Test
+    fun `should return 404 when no task with name`() = testScope {
+        val response = client.get("/tasks/byName/fail")
+
+        assertEquals(HttpStatusCode.NotFound, response.status)
     }
 }
