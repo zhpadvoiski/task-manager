@@ -6,8 +6,10 @@ import com.example.model.TaskRepository
 import com.example.model.tasksAsTable
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
+import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.*
 import io.ktor.server.http.content.staticResources
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.request.receiveParameters
 import io.ktor.server.response.*
@@ -18,6 +20,9 @@ fun Application.configureRouting() {
         exception<IllegalStateException> { call, cause ->
             call.respondText("App in illegal state as ${cause.message}")
         }
+    }
+    install(ContentNegotiation) {
+        json()
     }
 
     routing {
