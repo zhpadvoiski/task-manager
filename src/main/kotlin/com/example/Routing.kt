@@ -110,6 +110,12 @@ fun Application.configureRouting() {
             }
         }
 
+        route("/api") {
+            get("/tasks") {
+                call.respond(TaskRepository.allTasks())
+            }
+        }
+
         get("/") {
             call.respondText("Hello World!")
         }
