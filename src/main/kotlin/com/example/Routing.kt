@@ -6,11 +6,13 @@ import com.example.model.TaskRepository
 import com.example.model.tasksAsTable
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
+import io.ktor.serialization.JsonConvertException
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.*
 import io.ktor.server.http.content.staticResources
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.statuspages.StatusPages
+import io.ktor.server.request.receive
 import io.ktor.server.request.receiveParameters
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -112,9 +114,38 @@ fun Application.configureRouting() {
         }
 
         route("/api") {
-            get("/tasks") {
-                call.respond(TaskRepository.allTasks())
+            route("/tasks"){
+                get {
+                    call.respond(TaskRepository.allTasks())
+                }
+
+                post {
+                    try {
+                        val task = call.receive<Task>()
+                        TaskRepository.addTask(task)
+                        call.respond(HttpStatusCode.Created)
+                    } catch (e: java.lang.IllegalStateException) {
+                        call.respond(HttpStatusCode.BadRequest)
+                    } catch (e: JsonConvertException) {
+                        call.respond(HttpStatusCode.BadRequest)
+                    }
+                }
+
+                delete("/{taskName}") {
+                    val taskName = call.parameters["taskName"]
+                    if (taskName.isNullOrEmpty()){
+                        call.respond(HttpStatusCode.BadRequest)
+                        return@delete
+                    }
+
+                    if (TaskRepository.deleteTask(taskName)){
+                        call.respond(HttpStatusCode.NoContent)
+                    } else {
+                        call.respond(HttpStatusCode.NotFound)
+                    }
+                }
             }
+
         }
 
         get("/") {
