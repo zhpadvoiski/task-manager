@@ -34,3 +34,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### FE build
+client/build
+server/src/main/resources/static/

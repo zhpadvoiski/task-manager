@@ -35,3 +35,16 @@ tasks.register("runDev"){
 
     finalizedBy tasks.run
 }
+
+tasks.register("deleteClientCode", Delete) {
+    delete "$projectDir/src/main/resources/static/"
+}
+
+tasks.register("copyClientCode", Copy) {
+    from "$rootDir/client/build"
+    into "$projectDir/src/main/resources/static/"
+
+    dependsOn tasks.deleteClientCode
+}
+
+tasks.build.finalizedBy("copyClientCode")

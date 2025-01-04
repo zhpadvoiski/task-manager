@@ -1,11 +1,12 @@
-tasks.register("copyClientBuild", Copy) {
-    from 'client/build'
-    into 'server/src/main/resources/static/app'
+tasks.register("buildAll"){
+    group "build"
+    dependsOn ":client:build"
+    dependsOn ":server:build"
 }
 
-project(":server") {
-    tasks.named("run") {
-        dependsOn "copyClientBuild"
-    }
+tasks.register("runDev"){
+    group "application"
+    dependsOn tasks.buildAll
+    dependsOn ":server:runDev"
 }
 

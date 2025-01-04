@@ -1,0 +1,4 @@
+tasks.register("build", Exec){
+    workingDir("$projectDir")
+    commandLine("pnpm", "build")
+}

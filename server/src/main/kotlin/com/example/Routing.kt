@@ -9,6 +9,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.JsonConvertException
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.*
+import io.ktor.server.http.content.static
 import io.ktor.server.http.content.staticResources
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.statuspages.StatusPages
@@ -30,7 +31,10 @@ fun Application.configureRouting() {
     routing {
         staticResources("/content", "mycontent", "example.html")
         staticResources("/task-ui", "task-ui")
-        staticResources("/static", "static")
+        staticResources("/static-form", "static-form")
+
+        staticResources("/site", "static", "index.html")
+        staticResources("/static", "static/static")
 
         route("/tasks"){
             get {
