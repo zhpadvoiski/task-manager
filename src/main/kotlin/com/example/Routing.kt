@@ -28,6 +28,7 @@ fun Application.configureRouting() {
     routing {
         staticResources("/content", "mycontent", "example.html")
         staticResources("/task-ui", "task-ui")
+        staticResources("/static", "static")
 
         route("/tasks"){
             get {
