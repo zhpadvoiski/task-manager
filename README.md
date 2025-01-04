@@ -1,6 +1,6 @@
 # ktor-sample
 
-To build and run project run: `./gradlew runDev`
+To build and run project run: `./gradlew :runDev`
 
 This project was created using the [Ktor Project Generator](https://start.ktor.io).
 

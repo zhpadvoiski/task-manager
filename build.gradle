@@ -1,12 +1,12 @@
 tasks.register("buildAll"){
     group "build"
-    dependsOn ":client:build"
-    dependsOn ":server:build"
+    dependsOn ":client:build", ":server:build"
 }
 
 tasks.register("runDev"){
     group "application"
     dependsOn tasks.buildAll
-    dependsOn ":server:runDev"
+
+    finalizedBy(":server:runDev")
 }
 
