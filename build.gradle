@@ -1,0 +1,11 @@
+tasks.register("copyClientBuild", Copy) {
+    from 'client/build'
+    into 'server/src/main/resources/static/app'
+}
+
+project(":server") {
+    tasks.named("run") {
+        dependsOn "copyClientBuild"
+    }
+}
+
