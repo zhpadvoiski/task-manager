@@ -1,5 +1,8 @@
 package com.example
 
+import com.example.model.Priority
+import com.example.model.Task
+import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
@@ -10,9 +13,12 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.http.formUrlEncode
+import io.ktor.serialization.kotlinx.json.json
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
 import kotlin.test.assertContains
+import kotlin.test.assertContentEquals
 import org.junit.Test
 import org.junit.Assert.assertEquals
 
@@ -119,5 +125,42 @@ class ApplicationKtTest {
         val response = client.get("/tasks/byName/fail")
 
         assertEquals(HttpStatusCode.NotFound, response.status)
+    }
+
+    @Test
+    fun `should return json for api`() = testScope {
+        val client = createClient {
+            install(ContentNegotiation) {
+                json()
+            }
+        }
+
+        val response = client.get("/api/tasks")
+        val tasks = response.body<List<Task>>()
+
+        val tasksNames = tasks.map(Task::name)
+        val expectedTaskNames = listOf("cleaning", "gardening", "shopping", "painting")
+
+        assertContentEquals(tasksNames, expectedTaskNames)
+    }
+
+    @Test
+    fun `should post task through api`() = testScope {
+        val client = createClient {
+            install(ContentNegotiation) {
+                json()
+            }
+        }
+        val task = Task("reading", "Read the Harry Potter book", Priority.Medium)
+        val response = client.post("/api/tasks"){
+            header(HttpHeaders.ContentType, ContentType.Application.Json)
+            setBody(task)
+        }
+
+        assertEquals(HttpStatusCode.Created, response.status)
+
+        val response2 = client.get("/api/tasks/byName/reading")
+        assertEquals(HttpStatusCode.OK, response2.status)
+        assertEquals(task.name, response2.body<Task>().name)
     }
 }
